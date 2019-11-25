@@ -1,9 +1,8 @@
 public extension Dictionary where Value: Prelude.OptionalType {
-
   /**
    - returns: A new dictionary with `nil` values removed.
    */
-  public func compact() -> [Key: Value.Wrapped] {
+  func compact() -> [Key: Value.Wrapped] {
     var ret: [Key: Value.Wrapped] = [:]
     for (key, value) in self {
       if let value = value.optional {
@@ -15,7 +14,6 @@ public extension Dictionary where Value: Prelude.OptionalType {
 }
 
 public extension Dictionary {
-
   /**
    Merges `self` with `other`, but all values from `other` trump the values in `self`.
 
@@ -23,7 +21,7 @@ public extension Dictionary {
 
    - returns: A merged dictionary.
    */
-  public func withAllValuesFrom(_ other: Dictionary) -> Dictionary {
+  func withAllValuesFrom(_ other: Dictionary) -> Dictionary {
     var result = self
     other.forEach { result[$0] = $1 }
     return result
@@ -37,7 +35,7 @@ public extension Dictionary {
 
    - returns: A dictionary.
    */
-  public static func keyValuePairs(_ pairs: [(Key, Value)]) -> Dictionary {
+  static func keyValuePairs(_ pairs: [(Key, Value)]) -> Dictionary {
     var result = Dictionary()
     pairs.forEach { result[$0] = $1 }
     return result
@@ -52,13 +50,12 @@ public extension Dictionary {
 
    - returns: A new dictionary with keys transformed.
    */
-  public func transformedKeys(_ f: (Key) -> Key) -> Dictionary {
-    return Dictionary.keyValuePairs(self.map { (f($0), $1) })
+  func transformedKeys(_ f: (Key) -> Key) -> Dictionary {
+    return Dictionary.keyValuePairs(map { (f($0), $1) })
   }
 }
 
 extension Dictionary where Key: Semigroup {
-
   /**
    Use the semigroup operation on Key to prefix keys with a value.
 

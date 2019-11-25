@@ -18,15 +18,15 @@ public extension VectorType {
 
    - returns: A function that interpolates between `self` and `b` as `t` varies from `0` to `1`.
    */
-  public func lerp(_ b: Self) -> ((Self.Scalar) -> Self) {
+  func lerp(_ b: Self) -> ((Self.Scalar) -> Self) {
     return { t in self * (Self.Scalar.one() - t) + b * t }
   }
 
-  public func subtract(_ v: Self) -> Self {
+  func subtract(_ v: Self) -> Self {
     return self.add(v.negateVector())
   }
 
-  public func negateVector() -> Self {
+  func negateVector() -> Self {
     return self.scale(Self.Scalar.one().negate())
   }
 }
@@ -39,15 +39,15 @@ public extension VectorType {
 
  - returns: A function that interpolates between `a` and `b` as `t` varies from `0` to `1`.
  */
-public func lerp <V: VectorType> (_ a: V, _ b: V) -> ((V.Scalar) -> V) {
+public func lerp<V: VectorType>(_ a: V, _ b: V) -> ((V.Scalar) -> V) {
   return { t in a * (V.Scalar.one() - t) + b * t }
 }
 
-public func * <V: VectorType> (v: V, c: V.Scalar) -> V {
+public func * <V: VectorType>(v: V, c: V.Scalar) -> V {
   return v.scale(c)
 }
 
-public func + <V: VectorType> (v: V, w: V) -> V {
+public func + <V: VectorType>(v: V, w: V) -> V {
   return v.add(w)
 }
 

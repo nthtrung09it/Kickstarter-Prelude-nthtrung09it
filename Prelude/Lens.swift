@@ -1,4 +1,4 @@
-public struct Lens <Whole, Part> {
+public struct Lens<Whole, Part> {
   public let view: (Whole) -> Part
   public let set: (Part, Whole) -> Whole
 
@@ -36,13 +36,14 @@ public struct Lens <Whole, Part> {
         let part = self.view(whole)
         let newPart = rhs.set(subPart, part)
         return self.set(newPart, whole)
-    })
+      }
+    )
   }
 }
 
 public extension Lens where Part: Comparable {
   /// Constructs a comparator on `Whole` when `Part` conforms to `Comparable`.
-  public var comparator: Comparator<Whole> {
+  var comparator: Comparator<Whole> {
     return Comparator { lhs, rhs in
       self.view(lhs) < self.view(rhs) ? .lt
         : self.view(lhs) == self.view(rhs) ? .eq
@@ -59,7 +60,7 @@ public extension Lens where Part: Comparable {
 
  - returns: A function that transforms a whole into a new whole with a part replaced.
  */
-public func .~ <Whole, Part> (lens: Lens<Whole, Part>, part: Part) -> ((Whole) -> Whole) {
+public func .~ <Whole, Part>(lens: Lens<Whole, Part>, part: Part) -> ((Whole) -> Whole) {
   return { whole in lens.set(part, whole) }
 }
 
@@ -71,7 +72,7 @@ public func .~ <Whole, Part> (lens: Lens<Whole, Part>, part: Part) -> ((Whole) -
 
  - returns: A part of a whole when viewed through the lens provided.
  */
-public func ^* <Whole, Part> (whole: Whole, lens: Lens<Whole, Part>) -> Part {
+public func ^* <Whole, Part>(whole: Whole, lens: Lens<Whole, Part>) -> Part {
   return lens.view(whole)
 }
 
@@ -84,7 +85,7 @@ public func ^* <Whole, Part> (whole: Whole, lens: Lens<Whole, Part>) -> Part {
  - returns: The composed lens.
  */
 @available(*, deprecated)
-public func • <A, B, C> (lhs: Lens<A, B>, rhs: Lens<B, C>) -> Lens<A, C> {
+public func • <A, B, C>(lhs: Lens<A, B>, rhs: Lens<B, C>) -> Lens<A, C> {
   return lhs.compose(rhs)
 }
 
@@ -96,7 +97,7 @@ public func • <A, B, C> (lhs: Lens<A, B>, rhs: Lens<B, C>) -> Lens<A, C> {
 
  - returns: The composed lens.
  */
-public func .. <A, B, C> (lhs: Lens<A, B>, rhs: Lens<B, C>) -> Lens<A, C> {
+public func .. <A, B, C>(lhs: Lens<A, B>, rhs: Lens<B, C>) -> Lens<A, C> {
   return lhs.compose(rhs)
 }
 
@@ -109,10 +110,10 @@ public func .. <A, B, C> (lhs: Lens<A, B>, rhs: Lens<B, C>) -> Lens<A, C> {
 
  - returns: The composed lens.
  */
-public func >•> <A, B, C> (lhs: Lens<A, B?>, rhs: Lens<B, C?>) -> Lens<A, C?> {
+public func >•> <A, B, C>(lhs: Lens<A, B?>, rhs: Lens<B, C?>) -> Lens<A, C?> {
   return Lens(
     view: { a in lhs.view(a).flatMap(rhs.view) },
-    set: { (c, a) in lhs.set(lhs.view(a).map { rhs.set(c, $0) }, a) }
+    set: { c, a in lhs.set(lhs.view(a).map { rhs.set(c, $0) }, a) }
   )
 }
 
@@ -124,7 +125,7 @@ public func >•> <A, B, C> (lhs: Lens<A, B?>, rhs: Lens<B, C?>) -> Lens<A, C?> 
 
  - returns: A function that transforms a whole into a new whole with its part transformed by `f`.
  */
-public func %~ <Whole, Part> (lens: Lens<Whole, Part>, f: @escaping (Part) -> Part) -> ((Whole) -> Whole) {
+public func %~ <Whole, Part>(lens: Lens<Whole, Part>, f: @escaping (Part) -> Part) -> ((Whole) -> Whole) {
   return lens.over(f)
 }
 
@@ -136,9 +137,8 @@ public func %~ <Whole, Part> (lens: Lens<Whole, Part>, f: @escaping (Part) -> Pa
 
  - returns: A function that transforms a whole into a new whole with its part transformed by `f`.
  */
-public func %~~ <Whole, Part> (lens: Lens<Whole, Part>,
-                               f: @escaping (Part, Whole) -> Part) -> ((Whole) -> Whole) {
-
+public func %~~ <Whole, Part>(lens: Lens<Whole, Part>,
+                              f: @escaping (Part, Whole) -> Part) -> ((Whole) -> Whole) {
   return { whole in
     let part = lens.view(whole)
     return lens.set(f(part, whole), whole)
@@ -153,7 +153,7 @@ public func %~~ <Whole, Part> (lens: Lens<Whole, Part>,
 
  - returns: A function that transform a whole into a new whole with its part concatenated to `a`.
  */
-public func <>~ <Whole, Part: Semigroup> (lens: Lens<Whole, Part>, a: Part) -> ((Whole) -> Whole) {
+public func <>~ <Whole, Part: Semigroup>(lens: Lens<Whole, Part>, a: Part) -> ((Whole) -> Whole) {
   return lens.over(<>a)
 }
 
@@ -166,7 +166,7 @@ public func lens<Whole, Part>(_ keyPath: WritableKeyPath<Whole, Part>) -> Lens<W
       var copy = whole
       copy[keyPath: keyPath] = part
       return copy
-  }
+    }
   )
 }
 
@@ -178,7 +178,7 @@ public func lens<Whole, Part>(_ keyPath: WritableKeyPath<Whole, Part>) -> Lens<W
 
  - returns: A function that transforms a whole into a new whole with a part replaced.
  */
-public func .~ <Whole, Part> (keyPath: WritableKeyPath<Whole, Part>, part: Part) -> ((Whole) -> Whole) {
+public func .~ <Whole, Part>(keyPath: WritableKeyPath<Whole, Part>, part: Part) -> ((Whole) -> Whole) {
   return lens(keyPath) .~ part
 }
 
@@ -190,10 +190,9 @@ public func .~ <Whole, Part> (keyPath: WritableKeyPath<Whole, Part>, part: Part)
 
  - returns: A function that transforms a whole into a new whole with its part transformed by `f`.
  */
-public func %~ <Whole, Part> (keyPath: WritableKeyPath<Whole, Part>, f: @escaping (Part) -> Part)
+public func %~ <Whole, Part>(keyPath: WritableKeyPath<Whole, Part>, f: @escaping (Part) -> Part)
   -> ((Whole) -> Whole) {
-
-    return lens(keyPath) %~ f
+  return lens(keyPath) %~ f
 }
 
 /**
@@ -204,9 +203,8 @@ public func %~ <Whole, Part> (keyPath: WritableKeyPath<Whole, Part>, f: @escapin
 
  - returns: A function that transforms a whole into a new whole with its part transformed by `f`.
  */
-public func %~~ <Whole, Part> (keyPath: WritableKeyPath<Whole, Part>,
-                               f: @escaping (Part, Whole) -> Part) -> ((Whole) -> Whole) {
-
+public func %~~ <Whole, Part>(keyPath: WritableKeyPath<Whole, Part>,
+                              f: @escaping (Part, Whole) -> Part) -> ((Whole) -> Whole) {
   return lens(keyPath) %~~ f
 }
 
@@ -218,20 +216,18 @@ public func %~~ <Whole, Part> (keyPath: WritableKeyPath<Whole, Part>,
 
  - returns: A function that transform a whole into a new whole with its part concatenated to `a`.
  */
-public func <>~ <Whole, Part: Semigroup> (keyPath: WritableKeyPath<Whole, Part>, a: Part)
+public func <>~ <Whole, Part: Semigroup>(keyPath: WritableKeyPath<Whole, Part>, a: Part)
   -> ((Whole) -> Whole) {
-
-    return lens(keyPath) <>~ a
+  return lens(keyPath) <>~ a
 }
 
 public extension KeyPath {
+  /**
+   Computed property that returns a getter function with the value of a given keyPath.
+   It's similar to the `view` property of Lenses.
+   */
 
-/**
-  Computed property that returns a getter function with the value of a given keyPath.
-  It's similar to the `view` property of Lenses.
-*/
-
-  public var view: (Root) -> Value {
+  var view: (Root) -> Value {
     return { whole in
       whole[keyPath: self]
     }
